@@ -559,7 +559,7 @@ static void draw_board_bottom(void) {
     const u32 bg = rgba(19,27,42), empty = rgba(37,47,65);
     C2D_TargetClear(screen_bottom, bg);
     C2D_SceneBegin(screen_bottom);
-    label(editor_mode ? "PUZZLE 3DS V07-C EDITOR" : "PUZZLE 3DS V07-B", 10, 6, 0.63f, rgba(242,247,255));
+    label(editor_mode ? "PUZZLE 3DS V07-C EDITOR" : "PUZZLE 3DS V07-C", 10, 6, 0.63f, rgba(242,247,255));
     char info[100];
     if (editor_mode) snprintf(info, sizeof(info), "Pincel: %c  Guardar con nombre", brush);
     else if (custom_play) snprintf(info, sizeof(info), "Nivel personalizado   Mov: %d", state.moves);
