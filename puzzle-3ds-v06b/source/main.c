@@ -398,13 +398,14 @@ static void draw_board_bottom(void) {
         button(236,105, 74, 29, "DERECHA", rgba(51,105,116));
         button(155,140, 73, 29, "DESHACER", rgba(80,83,126));
         button(236,140, 74, 29, "REINICIAR", rgba(125,74,85));
-        button(155,175,155,29,
-            custom_play ? "VOLVER AL MENU" :
-            (won ? (level+1<LEVELS ? "SIGUIENTE NIVEL" : "VOLVER AL MENU") : "EDITOR (SELECT)"),
-            rgba(47,100,77));
+        /* Navegacion explicita tanto en campana como en puzles del jugador. */
+        if (!custom_play && won && level+1<LEVELS)
+            button(155,175,73,29,"SIGUIENTE",rgba(47,100,77));
+        else
+            button(155,175,73,29,"EDITOR",rgba(47,100,77));
+        button(236,175,74,29,"MENU",rgba(60,94,142));
         if (won) label("NIVEL COMPLETADO!", 10, 207, 0.42f, rgba(119,228,159));
-        else label(custom_play ? "B: menu | SELECT: editor" : "X/Y: mover | SELECT: editor",
-            10, 207, 0.35f, rgba(180,225,241));
+        else label("X/Y: mover | START: menu",10,207,0.35f,rgba(180,225,241));
         label(touch_action, 10, 224, 0.35f, rgba(250,226,137));
     }
 }
@@ -458,6 +459,7 @@ static void draw_help_bottom(void){
     label("Y: mover pieza a la derecha",18,102,0.53f,rgba(215,230,246));
     label("L: deshacer   B: volver / reiniciar",18,129,0.46f,rgba(215,230,246));
     label("SELECT: editor durante partida",18,155,0.50f,rgba(215,230,246));
+    label("START: volver al menu",18,178,0.48f,rgba(245,199,116));
     button(35,193,250,36,"VOLVER AL MENU",rgba(61,110,145));
 }
 static void draw_credits_top(void){
@@ -557,14 +559,14 @@ static bool handle_game_touch(u16 x,u16 y){
     }
     if (in_rect(x,y,155,140,73,29)) { touch_action="DESHACER"; undo(); return true; }
     if (in_rect(x,y,236,140,74,29)) { touch_action="REINICIAR"; reset_current(); return true; }
-    if (in_rect(x,y,155,175,155,29)) {
-        if (custom_play) { go_menu(); touch_action="Volviste al menu"; return true; }
-        if(won&&!custom_play){
-            if(level+1<LEVELS){load_level(level+1);touch_action="SIGUIENTE NIVEL";}
-            else{go_menu();touch_action="Volviste al menu";}
-            return true;
-        }
-        open_editor(); touch_action="EDITOR"; return true;
+    if (in_rect(x,y,236,175,74,29)) {
+        go_menu(); touch_action="Volviste al menu"; return true;
+    }
+    if (in_rect(x,y,155,175,73,29)) {
+        if (!custom_play && won && level+1<LEVELS) {
+            load_level(level+1); touch_action="SIGUIENTE NIVEL";
+        } else { open_editor(); touch_action="EDITOR"; }
+        return true;
     }
     if (won) { touch_action="GANASTE: EDITOR o DESHACER"; return false; }
     if (in_rect(x,y,155,70,73,29)) { if(state.cy>0) --state.cy; touch_action="SELECTOR ARRIBA"; return true; }
@@ -594,8 +596,13 @@ int main(int argc, char **argv) {
     load_level(0);scene=SCENE_MENU;
     while(aptMainLoop()){
         hidScanInput();
-        const u32 down=hidKeysDown();
-        if(down&KEY_START)break;
+        u32 down=hidKeysDown();
+        /* START vuelve al menu desde cualquier pantalla; en el menu sale. */
+        if (down & KEY_START) {
+            if (scene == SCENE_MENU) break;
+            go_menu();
+            down = 0;
+        }
         if(scene==SCENE_MENU){
             if(down&KEY_UP)menu_selection=(menu_selection+MENU_COUNT-1)%MENU_COUNT;
             if(down&KEY_DOWN)menu_selection=(menu_selection+1)%MENU_COUNT;
