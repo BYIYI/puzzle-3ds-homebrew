@@ -1,0 +1,1 @@
+Puzzle 3DS V07-B: descomprimir en C:/3DS-Proyectos, compilar con devkitPro MSYS2 (make clean && make), copiar .3dsx a SD:/3ds/puzzle_3ds_v07b_tutorial/. No borrar directorios V06-B/V07-A.
