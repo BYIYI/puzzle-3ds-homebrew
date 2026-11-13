@@ -1,15 +1,41 @@
-# Puzzle 3DS V06-A — menú (corrección 1)
+# Puzzle 3DS — V06-A
 
-Estado: **compilación y controles generales confirmados por prueba en Old 3DS**. La corrección siguiente está pendiente de recompilación y prueba.
+Nintendo Old 3DS homebrew puzzle game, original educational project (not a Wizznic! port).
 
-## Fallos reportados
-- En el editor, las piezas se dibujan arriba, pero no aparecen en el tablero inferior.
-- Al terminar los 3 niveles, el botón inferior conduce al editor en lugar de cerrar claramente la campaña.
+## Funciones validadas en Old 3DS
 
-## Cambios preparados en el ZIP corregido
-- En `draw_board_bottom`, usar `editor_mode ? editor_cells[y][x] : state.cells[y][x]` en vez de `state.cells[y][x]`.
-- Cuando se gana el tercer nivel, mostrar `VOLVER AL MENU` y permitir volver con A o toque.
-- Al elegir JUGAR, comenzar desde el nivel 1.
-- Conservar guardados en `sdmc:/3ds/puzzle_3ds_v05b/nivel_01.txt`.
+- Menú principal JUGAR, EDITOR, COMO JUGAR y CREDITOS.
+- Navegación con botones y pantalla táctil.
+- Campaña de tres niveles; tras ganar el tercero regresa al menú.
+- JUGAR reinicia desde el nivel 1.
+- Editor táctil: los cambios se reflejan en ambas pantallas.
+- Guardar y cargar un nivel en la SD (heredado de V05-B).
 
-El código fuente corregido aún debe subirse a esta rama después de verificar su compilación. No fusionar aún a `main` y no publicar como versión estable.
+## Compilación
+
+Requiere devkitPro con devkitARM, libctru, citro2d y citro3d.
+
+```bash
+cd /c/3DS-Proyectos/puzzle_3ds_v06a
+make
+```
+
+Copiar el archivo generado `puzzle_3ds_v06a.3dsx` a `SD:/3ds/puzzle_3ds_v06a/`.
+
+## Controles
+
+- Menú: cruceta y A, o tocar botón.
+- Juego: cruceta selecciona, X mueve bloque a izquierda, Y a derecha, L deshace y B reinicia.
+- SELECT abre el editor durante el juego.
+- Editor: tocar casillas para pintar; GUARDAR y CARGAR utilizan el slot 1.
+- Pantallas informativas: A, B o VOLVER.
+
+## Guardado
+
+Para preservar los niveles anteriores, el archivo sigue en `sdmc:/3ds/puzzle_3ds_v05b/nivel_01.txt`. No borres esa carpeta.
+
+## Estado
+
+**Validación manual reportada:** 5/5 pruebas V06-A Corrección 1 completadas en Old 3DS. El código se ha incorporado a la rama de desarrollo después de esas pruebas; se recomienda recompilar desde esta rama antes de fusionar y liberar un binario público.
+
+La licencia y las condiciones de redistribución están pendientes de definir antes del lanzamiento comunitario.
