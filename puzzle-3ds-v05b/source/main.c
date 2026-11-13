@@ -379,12 +379,10 @@ int main(int argc, char **argv) {
         if (label_buf) C2D_TextBufDelete(label_buf);
         C2D_Fini(); C3D_Fini(); gfxExit(); return 1;
     }
-    if (R_SUCCEEDED(fsInit())) {
-        if (R_SUCCEEDED(sdmcInit())) {
-            storage_ready=true;
-            snprintf(storage_status,sizeof(storage_status),"SD lista - slot 1");
-        } else snprintf(storage_status,sizeof(storage_status),"Error montando tarjeta SD");
-    } else snprintf(storage_status,sizeof(storage_status),"Error iniciando FS");
+    /* libctru monta sdmc:/ durante el arranque normal de homebrew.
+       No existe sdmcInit/sdmcExit en la API; comprobar archivos en cada operacion. */
+    storage_ready = true;
+    snprintf(storage_status, sizeof(storage_status), "SD: guardar/cargar slot 1");
     load_level(0);
     while (aptMainLoop()) {
         hidScanInput();
@@ -422,8 +420,6 @@ int main(int argc, char **argv) {
         draw_bottom();
         C3D_FrameEnd(0);
     }
-    if (storage_ready) sdmcExit();
-    fsExit();
     C2D_TextBufDelete(label_buf);
     C2D_Fini();
     C3D_Fini();
