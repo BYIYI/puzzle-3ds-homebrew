@@ -12,3 +12,7 @@ Nueva biblioteca **MIS NIVELES**, con tres espacios y nombres personalizados. Al
 
 ## Estado
 El código fuente experimental está preparado como ZIP para prueba local. **Aún no se ha compilado ni validado en una Old 3DS y el código fuente todavía no está subido a esta rama**. No fusionar hasta completar pruebas y sincronizar los archivos fuente exactos. No es un port de Wizznic!.
+
+## V06-B fix 1: salida del puzle personalizado
+
+El jugador podrá volver al menú pulsando B o tocando VOLVER AL MENU. ZIP corregido preparado para pruebas locales; el código fuente sigue pendiente de sincronización con esta rama. Ver CORRECCION_NAVEGACION.md.
