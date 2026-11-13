@@ -1,0 +1,6 @@
+V07-E EXPERIMENTAL - devkitPro MSYS2
+cd /c/3DS-Proyectos/puzzle_3ds_v07e
+make clean
+make
+Copiar puzzle_3ds_v07e.3dsx a SD:/3ds/puzzle_3ds_v07e/
+Conservar respaldos de progresos V07-A, niveles V06-B y partida V07-C.
