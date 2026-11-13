@@ -1196,9 +1196,9 @@ int main(int argc, char **argv) {
             /* SELECT ya no abre el editor durante una partida. */
             if ((down & KEY_SELECT) && scene==SCENE_EDITOR) go_menu();
             if(scene==SCENE_GAME) {
-                if((down & KEY_A) && won && !custom_play) {
-                    if(level+1<LEVELS) load_level(level+1);
-                    else go_menu();
+                if((down & KEY_A) && won) {
+                    if(custom_play || level+1>=LEVELS) go_menu();
+                    else load_level(level+1);
                 }
                 else if(down & KEY_L) undo();
                 else if(!won) {
