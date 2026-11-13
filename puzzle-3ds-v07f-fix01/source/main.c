@@ -1,3 +1,14 @@
+/* SPDX-License-Identifier: MPL-2.0
+ * Copyright (c) 2026 BYIYI
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * Proposed licensing notice: staged on unmerged documentation branch.
+ * Original project code, subject to provenance and dependency audit.
+ */
+
 /* Puzzle 3DS V07-B: tutorial interactivo y campana 16 niveles. NO es Wizznic. */
 #include <3ds.h>
 #include <citro2d.h>
