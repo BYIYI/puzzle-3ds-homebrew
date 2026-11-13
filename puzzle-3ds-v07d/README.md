@@ -1,19 +1,33 @@
-# Puzzle 3DS V07-D — Pulido visual (experimental)
+# Puzzle 3DS V07-D — Pulido visual (validado)
 
-Primera iteración basada en la V07-C validada. Se preparó un ZIP para probar localmente.
+Versión construida sobre V07-C, sin modificar intencionalmente la lógica de juego ni el formato de guardado.
 
-## Cambios
-- Portada con barra de progreso de campaña y total de estrellas.
-- Menú con selección más visible, relieve y acentos.
-- Barra de progreso en el selector de campaña e indicador gráfico de niveles completados.
-- Sin cambios intencionales en áreas táctiles, controles, guardados ni lógica de puntuación.
+## Funciones
+- Portada renovada: barra de progreso de campaña y total de estrellas obtenidas.
+- Botones con relieve y selección mejor diferenciada.
+- Indicadores visuales en el selector de campaña de 16 niveles.
+- Conserva pausa, continuación, tutorial, récords, editor y niveles personalizados.
 
-## Estado
-- [x] Código experimental preparado en ZIP.
-- [ ] Compilación con devkitARM en Windows.
-- [ ] Pruebas de legibilidad y navegación en Old 3DS.
-- [ ] Validación de progreso y estrellas frente a récords reales.
-- [ ] Pruebas de regresión de campaña, editor y pausa.
-- [ ] Sincronizar fuente exacta validada a esta rama.
+## Validación en Old 3DS — 13/11/2026
+- [x] Compila y abre correctamente.
+- [x] Menú en ambas pantallas.
+- [x] Botones y textos legibles.
+- [x] Barra de progreso muestra los niveles completados correctamente.
+- [x] Contador de estrellas coincide con los récords.
+- [x] Navegación por los 16 niveles.
+- [x] Controles táctiles.
+- [x] Guardar y continuar partidas.
+- [x] Editor, niveles personalizados y eliminación.
+- [x] Sin problemas observados de rendimiento o gráficos.
 
-**Esta rama contiene solo documentación por ahora. No fusionar hasta incorporar y validar el código.**
+**Resultado: 10/10 pruebas aprobadas; sin observaciones.**
+
+## Integridad del código validado
+Los archivos `source/main.c` y `Makefile` en esta rama coinciden por SHA de blob de Git con el ZIP `puzzle_3ds_v07d_interfaz.zip` validado en hardware.
+
+**Compilación**
+```sh
+cd /c/3DS-Proyectos/puzzle_3ds_v07d
+make clean
+make
+```
