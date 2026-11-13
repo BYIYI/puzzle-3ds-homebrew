@@ -633,13 +633,13 @@ static void draw_tutorial_bottom(void) {
     label("B: regresar al menu",15,217,0.41f,rgba(179,209,234));
 }
 static void tutorial_input(u32 down) {
-    if(down&KEY_B){go_menu();return;}
+    if(down&KEY_B){custom_play=false;go_menu();return;}
     if(tutorial_stage==0 && (down&(KEY_RIGHT|KEY_A)))tutorial_advance();
     else if((tutorial_stage==1||tutorial_stage==2) && (down&KEY_Y))tutorial_advance();
     else if(tutorial_stage==3 && (down&KEY_A))tutorial_advance();
     if(down&KEY_TOUCH){
         touchPosition p;hidTouchRead(&p);
-        if(in_rect(p.px,p.py,206,172,102,34))go_menu();
+        if(in_rect(p.px,p.py,206,172,102,34)){custom_play=false;go_menu();}
         else if(in_rect(p.px,p.py,12,172,187,34))tutorial_advance();
     }
 }
