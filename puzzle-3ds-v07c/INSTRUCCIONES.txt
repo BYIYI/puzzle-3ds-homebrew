@@ -1,0 +1,5 @@
+1. Descomprimir en C:/3DS-Proyectos/puzzle_3ds_v07c
+2. devkitPro MSYS2: cd /c/3DS-Proyectos/puzzle_3ds_v07c
+3. make clean && make
+4. Copiar puzzle_3ds_v07c.3dsx a SD:/3ds/puzzle_3ds_v07c/
+5. Mantener los archivos anteriores de niveles, records y editor en la SD.
