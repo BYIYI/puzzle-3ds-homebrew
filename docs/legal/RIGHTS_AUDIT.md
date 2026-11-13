@@ -30,3 +30,25 @@
 ## Referencias
 - https://www.mozilla.org/en-US/MPL/2.0/FAQ/
 - https://creativecommons.org/licenses/by/4.0/
+
+
+## Declaración de procedencia recibida del responsable — 13 de noviembre de 2026
+
+El responsable del proyecto declara: «He dirigido el proyecto y desarrollado el código con ayuda de ChatGPT, sin otros programadores». No se han señalado colaboradores externos en la programación.
+
+**Alcance de la declaración:** registra la información comunicada por el responsable, pero no constituye por sí sola verificación independiente de originalidad, titularidad registral, derechos de terceros ni titularidad sobre todos los elementos de código histórico. La declaración no cubre necesariamente dependencias y fragmentos externos no identificados.
+
+En los términos de OpenAI para uso de ChatGPT fuera de EEE/Suiza/Reino Unido, entre usuario y OpenAI y en la medida permitida por la ley, la titularidad del output se asigna al usuario. Esto no equivale a una garantía de exclusividad u originalidad de cada línea ni elimina los derechos de terceros. Fuente: https://openai.com/policies/row-terms-of-use/
+
+**Siguiente verificación documental:**
+- [x] Declaración del responsable: sin otros programadores, desarrollo con asistencia de ChatGPT.
+- [x] Código de Fix01 inspeccionado: C con llamadas a libctru y citro2d; Makefile enlaza citro3d.
+- [x] Licencia upstream de libctru en README: términos zlib.
+- [x] Licencias upstream de citro2d y citro3d en archivos LICENSE: términos zlib.
+- [ ] Comprobar versión exacta de bibliotecas empaquetadas en el entorno devkitPro del responsable y copiar avisos pertinentes si hay redistribución de sus fuentes.
+- [ ] Revisar archivos e historial Git anteriores de todo el repositorio para detectar código de terceros y datos privados.
+- [ ] Confirmar quién figurará como titular de copyright del código (nombre/pseudónimo elegido; no inventarlo).
+- [ ] Revisar la distribución del binario concreto, otras dependencias enlazadas y posibles obligaciones de atribución.
+- [ ] Validar alcance legal de los materiales asistidos por IA y normativa aplicable antes de afirmaciones de propiedad exclusiva.
+
+No se debe representar esta auditoría como terminada hasta comprobar los pendientes.
