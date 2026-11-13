@@ -1,0 +1,6 @@
+1. Respaldar SD:/3ds/puzzle_3ds_v07a/campana.txt y los puzles personalizados.
+2. Extraer proyecto en C:/3DS-Proyectos/puzzle_3ds_v07a_16
+3. devkitPro MSYS2: cd /c/3DS-Proyectos/puzzle_3ds_v07a_16
+4. make clean && make
+5. Copiar puzzle_3ds_v07a_16.3dsx a SD:/3ds/puzzle_3ds_v07a_16/
+6. Probar niveles 9-16, paginas y progreso conservado.
