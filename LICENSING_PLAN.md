@@ -22,9 +22,17 @@
 - [ ] Designar responsable autorizado de la publicación y elegir el nombre de titular para el aviso de copyright, sin inventarlo.
 - [ ] Comprobar requisitos legales aplicables en Chile y demás jurisdicciones relevantes, preferiblemente con asesoría jurídica.
 
+## Preparación efectuada en rama de revisión
+
+- [x] Seudónimo confirmado: **BYIYI** para avisos de copyright.
+- [x] `LICENSE` con texto íntegro e inalterado de MPL 2.0, obtenido de la lista de licencias SPDX; se comprobó que coincide exactamente con el contenido subido a GitHub.
+- [x] Aviso preliminar SPDX `MPL-2.0` y `Copyright (c) 2026 BYIYI` en `puzzle-3ds-v07f-fix01/source/main.c`, **solo en esta rama**.
+- [x] Documentación de alcance `COPYRIGHT.md` y `README.md` preparada.
+- [ ] Auditoría de derechos y código externo aún pendiente; no completar la integración a `main` sin revisión.
+
 ## Aplicación tras aprobar auditoría
 
-- Añadir `LICENSE` con el **texto oficial completo de MPL 2.0** (https://www.mozilla.org/en-US/MPL/2.0/).
+- Confirmar e incorporar `LICENSE` preparado con el **texto oficial completo de MPL 2.0** (https://www.mozilla.org/en-US/MPL/2.0/).
 - Identificar código cubierto con los avisos de licencia recomendados por Mozilla y/o SPDX, sin sustituir los avisos preexistentes.
 - Añadir `LICENSES/CC-BY-4.0.txt` con licencia completa oficial solo si habrá recursos efectivamente licenciados bajo CC BY 4.0.
 - Enumerar por ruta las excepciones y materiales reservados en `ASSETS_LICENSE.md`, y contribuciones con licencia/autor en `CREDITS.md`.
