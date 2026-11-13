@@ -44,3 +44,14 @@ Se conserva el guardado de V05-B en `sdmc:/3ds/puzzle_3ds_v05b/nivel_01.txt`; el
 - No cambia el formato de los guardados, sus nombres ni sus rutas.
 
 **Antes de fusionar**: compilar el código de esta rama en devkitPro y repetir las pruebas de navegación, menú, slots y persistencia. Licencia por definir.
+
+
+## V06-B Corrección 3 (pendiente de prueba en Old 3DS)
+
+- El editor se abre únicamente desde **EDITOR** en el menú principal.
+- SELECT durante una partida no abre el editor.
+- Se retiró el botón de editor de las partidas; se muestra **VOLVER AL MENU** y, cuando corresponde, **SIGUIENTE**.
+- El botón **LEGADO** deja de mostrarse. El archivo previo `sdmc:/3ds/puzzle_3ds_v05b/nivel_01.txt` se preserva; la importación podrá diseñarse después.
+- Los tres espacios de V06-B y sus nombres personalizados mantienen las rutas anteriores.
+
+**Pruebas pendientes antes de fusionar PR #4:** campaña original, niveles personalizados, SELECT, menú, editor accesible únicamente desde principal, nombres y persistencia tras reiniciar. Código disponible en la rama de desarrollo; el .3dsx debe recompilarse y probarse en la consola.
