@@ -47,7 +47,7 @@ En los términos de OpenAI para uso de ChatGPT fuera de EEE/Suiza/Reino Unido, e
 - [x] Licencias upstream de citro2d y citro3d en archivos LICENSE: términos zlib.
 - [ ] Comprobar versión exacta de bibliotecas empaquetadas en el entorno devkitPro del responsable y copiar avisos pertinentes si hay redistribución de sus fuentes.
 - [ ] Revisar archivos e historial Git anteriores de todo el repositorio para detectar código de terceros y datos privados.
-- [ ] Confirmar quién figurará como titular de copyright del código (nombre/pseudónimo elegido; no inventarlo).
+- [x] Confirmado por el responsable el seudónimo de atribución **BYIYI** para los avisos públicos; no sustituye verificar la titularidad de todos los materiales.
 - [ ] Revisar la distribución del binario concreto, otras dependencias enlazadas y posibles obligaciones de atribución.
 - [ ] Validar alcance legal de los materiales asistidos por IA y normativa aplicable antes de afirmaciones de propiedad exclusiva.
 
