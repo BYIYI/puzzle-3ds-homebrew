@@ -1,4 +1,4 @@
-/* Puzzle 3DS V06-B: menu principal y tutorial. NO es Wizznic. */
+/* Puzzle 3DS V06-B Fix 3: editor solo desde menu. NO es Wizznic. */
 #include <3ds.h>
 #include <citro2d.h>
 #include <stdio.h>
@@ -387,8 +387,8 @@ static void draw_board_bottom(void) {
         button(155,132,155,26, "BORRAR (.)", rgba(69,79,95));
         button(155,163,73,26, "PROBAR", rgba(43,107,78));
         button(236,163,74,26, "GUARDAR", rgba(46,99,125));
-        button(155,194,73,26, "LEGADO", rgba(75,87,133));
-        button(236,194,74,26, "SALIR", rgba(86,73,121));
+        /* Archivo legado preservado en SD, no expuesto en el editor. */
+        button(155,194,155,26, "VOLVER AL MENU", rgba(86,73,121));
         label(storage_status, 10, 208, 0.35f, rgba(239,180,83));
         label(editor_message, 10, 223, 0.35f, rgba(250,226,137));
     } else {
@@ -398,10 +398,13 @@ static void draw_board_bottom(void) {
         button(236,105, 74, 29, "DERECHA", rgba(51,105,116));
         button(155,140, 73, 29, "DESHACER", rgba(80,83,126));
         button(236,140, 74, 29, "REINICIAR", rgba(125,74,85));
-        /* Navegacion explicita tanto en campana como en puzles del jugador. */
-        if (!custom_play && won && level+1<LEVELS)
+        /* El editor solo se abre desde el menu principal. */
+        if (!custom_play && won && level+1<LEVELS) {
             button(155,175,73,29,"SIGUIENTE",rgba(47,100,77));
-        button(236,175,74,29,"MENU",rgba(60,94,142));
+            button(236,175,74,29,"MENU",rgba(60,94,142));
+        } else {
+            button(155,175,155,29,"VOLVER AL MENU",rgba(60,94,142));
+        }
         if (won) label("NIVEL COMPLETADO!", 10, 207, 0.42f, rgba(119,228,159));
         else label("X/Y: mover | START: menu",10,207,0.35f,rgba(180,225,241));
         label(touch_action, 10, 224, 0.35f, rgba(250,226,137));
@@ -536,8 +539,7 @@ static bool handle_game_touch(u16 x,u16 y){
         if (in_rect(x,y,155,132,155,26)) { brush='.'; editor_message="Pincel borrar"; return true; }
         if (in_rect(x,y,155,163,73,26)) { play_custom(); touch_action="Probando nivel"; return true; }
         if (in_rect(x,y,236,163,74,26)) { begin_save(); return true; }
-        if (in_rect(x,y,155,194,73,26)) { load_saved_level(); return true; }
-        if (in_rect(x,y,236,194,74,26)) { editor_mode=false; scene=SCENE_MENU; editor_message="Editor cerrado"; return true; }
+        if (in_rect(x,y,155,194,155,26)) { go_menu(); editor_message="Editor cerrado"; return true; }
         if (in_rect(x,y,MINI_X,MINI_Y,W*MINI_STEP-MINI_GAP,H*MINI_STEP-MINI_GAP)) {
             const int px=x-MINI_X, py=y-MINI_Y;
             if (px%MINI_STEP >= MINI_TILE || py%MINI_STEP >= MINI_TILE) return false;
@@ -557,11 +559,12 @@ static bool handle_game_touch(u16 x,u16 y){
     }
     if (in_rect(x,y,155,140,73,29)) { touch_action="DESHACER"; undo(); return true; }
     if (in_rect(x,y,236,140,74,29)) { touch_action="REINICIAR"; reset_current(); return true; }
-    if (in_rect(x,y,236,175,74,29)) {
-        go_menu(); touch_action="Volviste al menu"; return true;
-    }
-    if (in_rect(x,y,155,175,73,29) && !custom_play && won && level+1<LEVELS) {
+    if (!custom_play && won && level+1<LEVELS && in_rect(x,y,155,175,73,29)) {
         load_level(level+1); touch_action="SIGUIENTE NIVEL"; return true;
+    }
+    if ((!custom_play && won && level+1<LEVELS && in_rect(x,y,236,175,74,29)) ||
+        ((custom_play || !won || level+1>=LEVELS) && in_rect(x,y,155,175,155,29))) {
+        go_menu(); touch_action="Volviste al menu"; return true;
     }
     if (won) { touch_action="GANASTE: SIGUIENTE o MENU"; return false; }
     if (in_rect(x,y,155,70,73,29)) { if(state.cy>0) --state.cy; touch_action="SELECTOR ARRIBA"; return true; }
