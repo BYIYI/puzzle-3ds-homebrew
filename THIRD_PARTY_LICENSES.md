@@ -1,16 +1,27 @@
-# Dependencias y revisión de licencias (inventario preliminar)
+# Dependencias y licencias externas — auditoría parcial
 
-## Dependencias detectadas en el Makefile y código actuales
-- **devkitARM / devkitPro** — cadena de herramientas de compilación para 3DS. Las licencias se verifican por componente y versión; no se supone una licencia única.
-- **libctru** (`<3ds.h>`, `-lctru`) — biblioteca de desarrollo para Nintendo 3DS. Debe verificarse la licencia exacta de la versión distribuida.
-- **citro2d** (`<citro2d.h>`, `-lcitro2d`) — interfaz de dibujo 2D.
-- **citro3d** (`-lcitro3d`) — biblioteca de gráficos.
-- **C standard library / math** (`-lm`, stdio, stdlib, etc.) — sujetas a las licencias de la cadena de herramientas utilizada.
+## Comprobadas en repositorios oficiales (13-11-2026)
 
-## Pendientes obligatorios antes de Release pública
-- [ ] Revisar textos de licencia de las versiones efectivamente usadas, no inferirlos por nombre.
-- [ ] Determinar qué avisos deben acompañar al binario `.3dsx` y a su distribución.
-- [ ] Verificar que no se incluyeron en el ZIP partes copiadas de proyectos, tutoriales o ejemplos externos sujetos a términos particulares.
-- [ ] Añadir archivos de licencia de terceros y atribuciones pertinentes sin alterar sus textos oficiales.
+| Componente | Evidencia upstream | Licencia upstream identificada |
+|---|---|---|
+| libctru | https://github.com/devkitPro/libctru/blob/master/README.md (sección License) | zlib (términos reproducidos allí) |
+| citro2d | https://github.com/devkitPro/citro2d/blob/master/LICENSE | zlib; aviso de copyright de fincs |
+| citro3d | https://github.com/devkitPro/citro3d/blob/master/LICENSE | zlib; aviso de copyright de fincs |
+| devkitARM / GCC y toolchain | Herramientas de compilación, no biblioteca única | Licencias distintas por componente: requiere inventario de la versión real |
+| C standard library y matemáticas | Toolchain de devkitPro | Determinar biblioteca/enlace usado y avisos que correspondan |
 
-**Nota:** una licencia MPL 2.0 sobre código propio no sustituye las licencias de dependencias externas.
+Las licencias zlib upstream son **compatibles en principio** con distribuir código propio bajo MPL 2.0, pero cada componente conserva sus propios derechos y avisos. El hecho de enlazar una biblioteca externa no transfiere su titularidad ni licencia al proyecto.
+
+## Dónde aparecen las dependencias
+
+El código Fix01 incluye `<3ds.h>` y `<citro2d.h>`. Su `Makefile` enlaza `-lcitro2d -lcitro3d -lctru -lm`.
+
+## Pendientes antes de una Release de binario
+
+- [ ] Registrar versiones efectivas de bibliotecas y toolchain con el entorno del responsable.
+- [ ] Revisar las licencias y avisos de los componentes exactamente distribuidos/enlazados.
+- [ ] Verificar si se distribuyen copias de código de ejemplos o fragmentos externos.
+- [ ] Acompañar la distribución de los avisos requeridos y conservar avisos de origen.
+- [ ] Verificar otros archivos y versiones antiguas del repo antes de declarar la auditoría completa.
+
+**No se han incorporado textos de licencia ajenos ni se ha cambiado aún la licencia del código propio.**
