@@ -1,0 +1,12 @@
+PUZZLE 3DS V07-F BETA 1 (CANDIDATA, PENDIENTE DE VALIDACION)
+
+1. Descomprime el ZIP en C:\3DS-Proyectos\puzzle_3ds_v07f_beta1
+2. Abre devkitPro MSYS2 y ejecuta:
+   cd /c/3DS-Proyectos/puzzle_3ds_v07f_beta1
+   make clean
+   make
+3. Copia puzzle_3ds_v07f_beta1.3dsx a SD:/3ds/puzzle_3ds_v07f_beta1/
+4. Abre Homebrew Launcher en tu Old 3DS y ejecuta la beta.
+5. No elimines los archivos de guardado anteriores.
+
+NOTA: ZIP DE CODIGO FUENTE. No contiene .3dsx ya compilado.
