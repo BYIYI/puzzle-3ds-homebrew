@@ -401,8 +401,6 @@ static void draw_board_bottom(void) {
         /* Navegacion explicita tanto en campana como en puzles del jugador. */
         if (!custom_play && won && level+1<LEVELS)
             button(155,175,73,29,"SIGUIENTE",rgba(47,100,77));
-        else
-            button(155,175,73,29,"EDITOR",rgba(47,100,77));
         button(236,175,74,29,"MENU",rgba(60,94,142));
         if (won) label("NIVEL COMPLETADO!", 10, 207, 0.42f, rgba(119,228,159));
         else label("X/Y: mover | START: menu",10,207,0.35f,rgba(180,225,241));
@@ -458,7 +456,7 @@ static void draw_help_bottom(void){
     label("X: mover pieza a la izquierda",18,75,0.53f,rgba(215,230,246));
     label("Y: mover pieza a la derecha",18,102,0.53f,rgba(215,230,246));
     label("L: deshacer   B: volver / reiniciar",18,129,0.46f,rgba(215,230,246));
-    label("SELECT: editor durante partida",18,155,0.50f,rgba(215,230,246));
+    label("EDITOR: desde menu principal",18,155,0.50f,rgba(215,230,246));
     label("START: volver al menu",18,178,0.48f,rgba(245,199,116));
     button(35,193,250,36,"VOLVER AL MENU",rgba(61,110,145));
 }
@@ -562,13 +560,10 @@ static bool handle_game_touch(u16 x,u16 y){
     if (in_rect(x,y,236,175,74,29)) {
         go_menu(); touch_action="Volviste al menu"; return true;
     }
-    if (in_rect(x,y,155,175,73,29)) {
-        if (!custom_play && won && level+1<LEVELS) {
-            load_level(level+1); touch_action="SIGUIENTE NIVEL";
-        } else { open_editor(); touch_action="EDITOR"; }
-        return true;
+    if (in_rect(x,y,155,175,73,29) && !custom_play && won && level+1<LEVELS) {
+        load_level(level+1); touch_action="SIGUIENTE NIVEL"; return true;
     }
-    if (won) { touch_action="GANASTE: EDITOR o DESHACER"; return false; }
+    if (won) { touch_action="GANASTE: SIGUIENTE o MENU"; return false; }
     if (in_rect(x,y,155,70,73,29)) { if(state.cy>0) --state.cy; touch_action="SELECTOR ARRIBA"; return true; }
     if (in_rect(x,y,236,70,74,29)) { if(state.cy<H-1) ++state.cy; touch_action="SELECTOR ABAJO"; return true; }
     if (in_rect(x,y,155,105,73,29)) { shift_block(-1); touch_action="MOVER PIEZA IZQUIERDA"; return true; }
@@ -650,10 +645,6 @@ int main(int argc, char **argv) {
             if(down&KEY_B){
                 if(scene==SCENE_EDITOR || (scene==SCENE_GAME && custom_play))go_menu();
                 else reset_current();
-            }
-            if(down&KEY_SELECT){
-                if(scene==SCENE_EDITOR){scene=SCENE_GAME;editor_mode=false;}
-                else open_editor();
             }
             if(scene==SCENE_GAME){
                 if((down&KEY_A)&&won&&!custom_play){
