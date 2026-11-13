@@ -1,0 +1,16 @@
+PUZZLE 3DS V07-F BETA 1 FIX01 — UNICO GUARDADO DE PARTIDA
+
+1. Respalda los guardados de tu tarjeta SD y conserva V07-F anterior.
+2. Descomprime el ZIP en C:\3DS-Proyectos\puzzle_3ds_v07f_fix01
+3. En devkitPro MSYS2:
+   cd /c/3DS-Proyectos/puzzle_3ds_v07f_fix01
+   make clean
+   make
+4. Copia puzzle_3ds_v07f_fix01.3dsx en SD:/3ds/puzzle_3ds_v07f_fix01/
+5. Inicia desde Homebrew Launcher.
+
+Usa siempre CONTINUAR PARTIDA para retomar el ultimo guardado.
+GUARDAR Y SALIR desde PAUSA sustituye el guardado anterior con confirmacion.
+Campana y mapas personalizados comparten el mismo archivo:
+SD:/3ds/puzzle_3ds_v07c/partida.txt
+No borres las carpetas de los niveles originales ni campana.
