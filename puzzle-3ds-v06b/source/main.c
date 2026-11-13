@@ -93,6 +93,75 @@ static void load_saved_level(void) {
     snprintf(storage_status,sizeof(storage_status),"Nivel cargado desde SD");
 }
 
+/* P3DS2: magic, nombre y seis filas del tablero. */
+static void slot_path(int slot,char *out,size_t n) {
+    snprintf(out,n,NEW_SAVE_DIR "/slot_%02d.txt",slot+1);
+}
+static bool read_slot(int slot,char *name,char out[H][W]) {
+    if(slot<0||slot>=SLOT_COUNT)return false;
+    char path[128],line[128],tmp_name[64];char tmp[H][W];
+    slot_path(slot,path,sizeof(path));
+    FILE *f=fopen(path,"rb");if(!f)return false;
+    bool ok=fgets(line,sizeof(line),f)&&strcmp(line,"P3DS2\n")==0;
+    if(ok){
+        if(!fgets(line,sizeof(line),f))ok=false;
+        else {
+            size_t n=strcspn(line,"\r\n");
+            if(n==0||n>LEVEL_NAME_MAX||n>=sizeof(tmp_name))ok=false;
+            else {memcpy(tmp_name,line,n);tmp_name[n]='\0';}
+        }
+    }
+    for(int y=0;y<H&&ok;y++){
+        if(!fgets(line,sizeof(line),f)){ok=false;break;}
+        size_t n=strcspn(line,"\r\n");
+        if(n!=W){ok=false;break;}
+        line[n]='\0';
+        if(!valid_row(line)){ok=false;break;}
+        memcpy(tmp[y],line,W);
+    }
+    if(ok&&fgetc(f)!=EOF)ok=false;
+    fclose(f);
+    if(ok){strcpy(name,tmp_name);memcpy(out,tmp,sizeof(tmp));}
+    return ok;
+}
+static void refresh_slots(void) {
+    char tmp[H][W];
+    for(int i=0;i<SLOT_COUNT;i++){
+        slot_occupied[i]=read_slot(i,slot_names[i],tmp);
+        if(!slot_occupied[i])strcpy(slot_names[i],"Espacio vacio");
+    }
+}
+static bool write_slot(int slot,const char *name) {
+    if(slot<0||slot>=SLOT_COUNT||!name||!*name)return false;
+    if(mkdir(NEW_SAVE_DIR,0777)!=0&&errno!=EEXIST)return false;
+    char path[128],temp[144];slot_path(slot,path,sizeof(path));
+    snprintf(temp,sizeof(temp),"%s.tmp",path);
+    FILE *f=fopen(temp,"wb");if(!f)return false;
+    bool ok=fputs("P3DS2\n",f)>=0&&fprintf(f,"%s\n",name)>=0;
+    for(int y=0;y<H&&ok;y++)ok=fwrite(editor_cells[y],1,W,f)==W&&fputc('\n',f)!=EOF;
+    if(fclose(f)!=0)ok=false;
+    if(!ok){remove(temp);return false;}
+    if(rename(temp,path)!=0){
+        char bak[144];snprintf(bak,sizeof(bak),"%s.bak",path);
+        remove(bak);
+        if(rename(path,bak)!=0||rename(temp,path)!=0){
+            rename(bak,path);remove(temp);return false;
+        }
+        remove(bak);
+    }
+    refresh_slots();return true;
+}
+static bool prompt_level_name(void) {
+    SwkbdState kbd;swkbdInit(&kbd,SWKBD_TYPE_NORMAL,2,LEVEL_NAME_MAX);
+    swkbdSetHintText(&kbd,"Nombre del puzle");
+    char buffer[64]={0};
+    SwkbdButton result=swkbdInputText(&kbd,buffer,sizeof(buffer));
+    if(result!=SWKBD_BUTTON_CONFIRM)return false;
+    size_t len=strlen(buffer);
+    if(!len||len>LEVEL_NAME_MAX||strchr(buffer,'\n')||strchr(buffer,'\r'))return false;
+    strcpy(pending_name,buffer);return true;
+}
+
 static C3D_RenderTarget *screen_top, *screen_bottom;
 static C2D_TextBuf label_buf;
 /* Ultimo toque, util para diagnostico. */
