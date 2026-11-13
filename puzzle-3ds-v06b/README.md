@@ -30,12 +30,17 @@ Se conserva el guardado de V05-B en `sdmc:/3ds/puzzle_3ds_v05b/nivel_01.txt`; el
 
 ## Pruebas
 
-El desarrollador validó 8/8 funcionalidades de la V06-B inicial en Old 3DS. Reportó que no se podía salir de los puzles personalizados. **Fix 1 está pendiente de prueba real**:
+- V06-B inicial: 8/8 pruebas superadas en Old 3DS.
+- V06-B corrección 1: 5/5 pruebas superadas, incluida la salida de niveles personalizados.
+- V06-B corrección 2: **pendiente de compilación y prueba en hardware**.
 
-- [ ] Compilar fuente desde esta rama.
-- [ ] Desde MIS NIVELES, abrir un puzle y regresar con B.
-- [ ] Volver a abrirlo y regresar mediante VOLVER AL MENU.
-- [ ] Verificar que los niveles oficiales siguen reiniciándose con B.
-- [ ] Confirmar que persisten los nombres y los guardados.
+### Corrección 2: navegación de niveles oficiales
+- Botón táctil **MENU** visible durante todos los niveles, oficiales y personalizados.
+- START regresa al menú desde la partida; START desde el menú principal cierra la aplicación.
+- B mantiene el reinicio de niveles oficiales; B regresa al menú en los niveles personalizados.
+- SELECT conserva el acceso al editor.
+- Tras completar un nivel oficial, A avanza al siguiente o vuelve al menú después del tercero.
+- Al terminar los niveles oficiales 1 y 2 se muestra SIGUIENTE junto a MENU.
+- No cambia el formato de los guardados, sus nombres ni sus rutas.
 
-Mantener la PR en borrador hasta probar el fix en hardware. Licencia de distribución aún por definir.
+**Antes de fusionar**: compilar el código de esta rama en devkitPro y repetir las pruebas de navegación, menú, slots y persistencia. Licencia por definir.
