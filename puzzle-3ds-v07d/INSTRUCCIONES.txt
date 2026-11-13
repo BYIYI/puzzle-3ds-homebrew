@@ -1,0 +1,7 @@
+V07-D: descomprime en C:\3DS-Proyectos\puzzle_3ds_v07d
+Abre devkitPro MSYS2 y ejecuta:
+cd /c/3DS-Proyectos/puzzle_3ds_v07d
+make clean
+make
+Copia puzzle_3ds_v07d.3dsx a SD:/3ds/puzzle_3ds_v07d/
+No borres los archivos de progreso de V07-A, ni los niveles V06-B ni las sesiones V07-C.
