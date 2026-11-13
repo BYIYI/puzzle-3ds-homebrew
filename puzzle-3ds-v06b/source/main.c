@@ -361,7 +361,7 @@ static void draw_board_bottom(void) {
     C2D_SceneBegin(screen_bottom);
     label(editor_mode ? "PUZZLE 3DS V06-B EDITOR" : "PUZZLE 3DS V06-B", 10, 6, 0.63f, rgba(242,247,255));
     char info[100];
-    if (editor_mode) snprintf(info, sizeof(info), "Pincel: %c   Slot: 1", brush);
+    if (editor_mode) snprintf(info, sizeof(info), "Pincel: %c  Guardar con nombre", brush);
     else if (custom_play) snprintf(info, sizeof(info), "Nivel personalizado   Mov: %d", state.moves);
     else snprintf(info, sizeof(info), "Nivel %d/3   Movimientos: %d", level+1, state.moves);
     label(info, 10, 31, 0.51f, rgba(169,211,241));
@@ -387,7 +387,7 @@ static void draw_board_bottom(void) {
         button(155,132,155,26, "BORRAR (.)", rgba(69,79,95));
         button(155,163,73,26, "PROBAR", rgba(43,107,78));
         button(236,163,74,26, "GUARDAR", rgba(46,99,125));
-        button(155,194,73,26, "CARGAR", rgba(75,87,133));
+        button(155,194,73,26, "LEGADO", rgba(75,87,133));
         button(236,194,74,26, "SALIR", rgba(86,73,121));
         label(storage_status, 10, 208, 0.35f, rgba(239,180,83));
         label(editor_message, 10, 223, 0.35f, rgba(250,226,137));
@@ -414,9 +414,10 @@ static void go_menu(void) { scene=SCENE_MENU; editor_mode=false; }
 static void menu_confirm(void) {
     switch(menu_selection){
         case 0: load_level(0);scene=SCENE_GAME;editor_mode=false;break;
-        case 1: open_editor();break;
-        case 2: scene=SCENE_HELP;break;
-        case 3: scene=SCENE_CREDITS;break;
+        case 1: slot_save_mode=false;slots_return_scene=SCENE_MENU;refresh_slots();scene=SCENE_SLOTS;break;
+        case 2: open_editor();break;
+        case 3: scene=SCENE_HELP;break;
+        case 4: scene=SCENE_CREDITS;break;
     }
 }
 static void menu_btn(float x,float y,float w,float h,const char *name,bool selected){
@@ -434,7 +435,7 @@ static void draw_menu_top(void){
 static void draw_menu_bottom(void){
     C2D_TargetClear(screen_bottom,rgba(19,27,42));C2D_SceneBegin(screen_bottom);
     label("MENU PRINCIPAL",21,10,0.68f,rgba(245,247,255));
-    for(int i=0;i<MENU_COUNT;i++)menu_btn(25,43+i*42,270,34,menu_items[i],i==menu_selection);
+    for(int i=0;i<MENU_COUNT;i++)menu_btn(25,37+i*37,270,32,menu_items[i],i==menu_selection);
     label("CRUCETA: elegir   A: entrar",18,216,0.42f,rgba(181,216,230));
 }
 static void draw_help_top(void){
@@ -468,6 +469,59 @@ static void draw_credits_bottom(void){
     label("Proyecto experimental para Old 3DS",17,99,0.49f,rgba(190,214,236));
     button(35,183,250,38,"VOLVER AL MENU",rgba(61,110,145));
 }
+static void draw_slots_top(void){
+    C2D_TargetClear(screen_top,rgba(19,27,42));C2D_SceneBegin(screen_top);
+    label(slot_save_mode?"GUARDAR MI PUZLE":"MIS NIVELES",60,34,1.03f,rgba(248,250,255));
+    label(slot_save_mode?pending_name:"Elige un puzle para jugar",55,100,0.60f,rgba(111,217,231));
+    label("3 espacios disponibles",95,158,0.53f,rgba(245,204,125));
+}
+static void draw_slots_bottom(void){
+    C2D_TargetClear(screen_bottom,rgba(19,27,42));C2D_SceneBegin(screen_bottom);
+    label(slot_save_mode?"ELIGE DONDE GUARDAR":"TUS CREACIONES",19,9,0.63f,rgba(247,249,253));
+    for(int i=0;i<SLOT_COUNT;i++){
+        if(i==selected_slot)C2D_DrawRectSolid(16,36+i*55,0,288,50,rgba(243,196,84));
+        button(19,39+i*55,282,44,slot_names[i],i==selected_slot?rgba(49,113,148):rgba(49,68,91));
+    }
+    label(library_status,12,209,0.39f,rgba(248,211,133));
+    label("A: elegir    B: volver",12,226,0.37f,rgba(203,224,243));
+}
+static void draw_overwrite_top(void){
+    C2D_TargetClear(screen_top,rgba(19,27,42));C2D_SceneBegin(screen_top);
+    label("REEMPLAZAR NIVEL?",77,55,0.95f,rgba(255,226,156));
+    label("Se perdera el nivel guardado",57,115,0.62f,rgba(242,242,249));
+    label("Esta accion no se puede deshacer",54,162,0.48f,rgba(241,168,161));
+}
+static void draw_overwrite_bottom(void){
+    C2D_TargetClear(screen_bottom,rgba(19,27,42));C2D_SceneBegin(screen_bottom);
+    button(16,75,137,53,"CANCELAR",rgba(76,87,111));
+    button(166,75,137,53,"REEMPLAZAR",rgba(135,70,69));
+    label("B: cancelar   A: confirmar",19,201,0.50f,rgba(232,240,252));
+}
+static void choose_slot(void){
+    if(slot_save_mode){
+        if(slot_occupied[selected_slot])scene=SCENE_OVERWRITE;
+        else {
+            bool ok=write_slot(selected_slot,pending_name);
+            snprintf(storage_status,sizeof(storage_status),"%s",ok?"Nivel guardado":"Error guardando nivel");
+            scene=SCENE_EDITOR;
+        }
+    }else{
+        char name[64],cells[H][W];
+        if(read_slot(selected_slot,name,cells)){
+            memcpy(editor_cells,cells,sizeof(editor_cells));
+            play_custom();
+        }else snprintf(library_status,sizeof(library_status),"Espacio vacio o archivo invalido");
+    }
+}
+static void begin_save(void){
+    if(!prompt_level_name()){
+        snprintf(storage_status,sizeof(storage_status),"Nombre cancelado o invalido");
+        return;
+    }
+    slot_save_mode=true;selected_slot=0;refresh_slots();
+    snprintf(library_status,sizeof(library_status),"Selecciona un espacio");
+    scene=SCENE_SLOTS;
+}
 static bool handle_game_touch(u16 x,u16 y){
     touch_action = "Toque fuera de controles";
     if (editor_mode) {
@@ -477,7 +531,7 @@ static bool handle_game_touch(u16 x,u16 y){
         if (in_rect(x,y,236,101,74,26)) { brush='#'; editor_message="Pincel muro"; return true; }
         if (in_rect(x,y,155,132,155,26)) { brush='.'; editor_message="Pincel borrar"; return true; }
         if (in_rect(x,y,155,163,73,26)) { play_custom(); touch_action="Probando nivel"; return true; }
-        if (in_rect(x,y,236,163,74,26)) { save_level(); return true; }
+        if (in_rect(x,y,236,163,74,26)) { begin_save(); return true; }
         if (in_rect(x,y,155,194,73,26)) { load_saved_level(); return true; }
         if (in_rect(x,y,236,194,74,26)) { editor_mode=false; scene=SCENE_MENU; editor_message="Editor cerrado"; return true; }
         if (in_rect(x,y,MINI_X,MINI_Y,W*MINI_STEP-MINI_GAP,H*MINI_STEP-MINI_GAP)) {
@@ -543,7 +597,7 @@ int main(int argc, char **argv) {
             if(down&KEY_A)menu_confirm();
             if(down&KEY_TOUCH){
                 touchPosition p;hidTouchRead(&p);
-                for(int i=0;i<MENU_COUNT;i++)if(in_rect(p.px,p.py,25,43+i*42,270,34)){
+                for(int i=0;i<MENU_COUNT;i++)if(in_rect(p.px,p.py,25,37+i*37,270,32)){
                     menu_selection=i;menu_confirm();break;
                 }
             }
