@@ -1,4 +1,4 @@
-/* Puzzle 3DS V06-B Fix 3: editor solo desde menu. NO es Wizznic. */
+/* Puzzle 3DS V06-B Fix 4: borrado confirmado y B seguro. NO es Wizznic. */
 #include <3ds.h>
 #include <citro2d.h>
 #include <stdio.h>
@@ -30,7 +30,7 @@ static int history_count = 0, level = 0;
 static bool won = false;
 static bool editor_mode = false;
 static bool custom_play = false;
-typedef enum { SCENE_MENU, SCENE_GAME, SCENE_EDITOR, SCENE_HELP, SCENE_CREDITS, SCENE_SLOTS, SCENE_OVERWRITE } Scene;
+typedef enum { SCENE_MENU, SCENE_GAME, SCENE_EDITOR, SCENE_HELP, SCENE_CREDITS, SCENE_SLOTS, SCENE_OVERWRITE, SCENE_DELETE } Scene;
 static Scene scene = SCENE_MENU;
 static int menu_selection = 0;
 static const char *menu_items[] = { "JUGAR", "MIS NIVELES", "EDITOR", "COMO JUGAR", "CREDITOS" };
@@ -123,6 +123,11 @@ static bool read_slot(int slot,char *name,char out[H][W]) {
     fclose(f);
     if(ok){strcpy(name,tmp_name);memcpy(out,tmp,sizeof(tmp));}
     return ok;
+}
+static bool delete_slot_file(int slot) {
+    if(slot<0||slot>=SLOT_COUNT||!slot_occupied[slot])return false;
+    char path[128];slot_path(slot,path,sizeof(path));
+    return remove(path)==0;
 }
 static void refresh_slots(void) {
     char tmp[H][W];
@@ -406,7 +411,7 @@ static void draw_board_bottom(void) {
             button(155,175,155,29,"VOLVER AL MENU",rgba(60,94,142));
         }
         if (won) label("NIVEL COMPLETADO!", 10, 207, 0.42f, rgba(119,228,159));
-        else label("X/Y: mover | START: menu",10,207,0.35f,rgba(180,225,241));
+        else label("X/Y: mover | MENU: pantalla tactil",10,207,0.30f,rgba(180,225,241));
         label(touch_action, 10, 224, 0.35f, rgba(250,226,137));
     }
 }
@@ -458,9 +463,9 @@ static void draw_help_bottom(void){
     label("Cruceta: seleccionar casilla",18,48,0.53f,rgba(215,230,246));
     label("X: mover pieza a la izquierda",18,75,0.53f,rgba(215,230,246));
     label("Y: mover pieza a la derecha",18,102,0.53f,rgba(215,230,246));
-    label("L: deshacer   B: volver / reiniciar",18,129,0.46f,rgba(215,230,246));
+    label("L: deshacer   B: reiniciar oficial",18,129,0.46f,rgba(215,230,246));
     label("EDITOR: desde menu principal",18,155,0.50f,rgba(215,230,246));
-    label("START: volver al menu",18,178,0.48f,rgba(245,199,116));
+    label("VOLVER AL MENU: boton tactil",18,178,0.46f,rgba(245,199,116));
     button(35,193,250,36,"VOLVER AL MENU",rgba(61,110,145));
 }
 static void draw_credits_top(void){
@@ -489,8 +494,9 @@ static void draw_slots_bottom(void){
         if(i==selected_slot)C2D_DrawRectSolid(16,36+i*55,0,288,50,rgba(243,196,84));
         button(19,39+i*55,282,44,slot_names[i],i==selected_slot?rgba(49,113,148):rgba(49,68,91));
     }
-    label(library_status,12,209,0.39f,rgba(248,211,133));
-    label("A: elegir    B: volver",12,226,0.37f,rgba(203,224,243));
+    if(!slot_save_mode)button(183,204,125,27,"ELIMINAR",rgba(137,65,73));
+    label(library_status,12,203,0.30f,rgba(248,211,133));
+    label(slot_save_mode?"A: guardar B: volver":"A: jugar X: eliminar B: volver",12,232,0.30f,rgba(203,224,243));
 }
 static void draw_overwrite_top(void){
     C2D_TargetClear(screen_top,rgba(19,27,42));C2D_SceneBegin(screen_top);
@@ -503,6 +509,32 @@ static void draw_overwrite_bottom(void){
     button(16,75,137,53,"CANCELAR",rgba(76,87,111));
     button(166,75,137,53,"REEMPLAZAR",rgba(135,70,69));
     label("B: cancelar   A: confirmar",19,201,0.50f,rgba(232,240,252));
+}
+static void begin_delete(void) {
+    if(slot_save_mode||!slot_occupied[selected_slot]) {
+        snprintf(library_status,sizeof(library_status),"Espacio vacio");
+        return;
+    }
+    scene=SCENE_DELETE;
+}
+static void confirm_delete(void) {
+    if(delete_slot_file(selected_slot)) {
+        refresh_slots();
+        snprintf(library_status,sizeof(library_status),"Puzle eliminado (%d)",selected_slot+1);
+    } else snprintf(library_status,sizeof(library_status),"No se pudo eliminar");
+    scene=SCENE_SLOTS;
+}
+static void draw_delete_top(void) {
+    C2D_TargetClear(screen_top,rgba(19,27,42));C2D_SceneBegin(screen_top);
+    label("ELIMINAR PUZLE?",78,54,0.90f,rgba(255,226,156));
+    label(slot_names[selected_slot],48,117,0.70f,rgba(242,242,249));
+    label("No se puede recuperar despues",49,162,0.49f,rgba(241,168,161));
+}
+static void draw_delete_bottom(void) {
+    C2D_TargetClear(screen_bottom,rgba(19,27,42));C2D_SceneBegin(screen_bottom);
+    button(16,75,137,53,"CANCELAR",rgba(76,87,111));
+    button(166,75,137,53,"ELIMINAR",rgba(135,70,69));
+    label("B: cancelar  A: eliminar",19,201,0.48f,rgba(232,240,252));
 }
 static void choose_slot(void){
     if(slot_save_mode){
@@ -595,11 +627,9 @@ int main(int argc, char **argv) {
     while(aptMainLoop()){
         hidScanInput();
         u32 down=hidKeysDown();
-        /* START vuelve al menu desde cualquier pantalla; en el menu sale. */
-        if (down & KEY_START) {
-            if (scene == SCENE_MENU) break;
-            go_menu();
-            down = 0;
+        if(down&KEY_START) {
+            if(scene==SCENE_MENU)break;
+            down &= ~KEY_START; /* No abandonar partida accidentalmente. */
         }
         if(scene==SCENE_MENU){
             if(down&KEY_UP)menu_selection=(menu_selection+MENU_COUNT-1)%MENU_COUNT;
@@ -615,12 +645,22 @@ int main(int argc, char **argv) {
             if(down & KEY_UP)selected_slot=(selected_slot+SLOT_COUNT-1)%SLOT_COUNT;
             if(down & KEY_DOWN)selected_slot=(selected_slot+1)%SLOT_COUNT;
             if(down & KEY_B)scene=slot_save_mode?SCENE_EDITOR:SCENE_MENU;
+            if(down & KEY_X)begin_delete();
             if(down & KEY_A)choose_slot();
             if(down & KEY_TOUCH){
                 touchPosition p;hidTouchRead(&p);
-                for(int i=0;i<SLOT_COUNT;i++)if(in_rect(p.px,p.py,19,39+i*55,282,44)){
+                if(!slot_save_mode&&in_rect(p.px,p.py,183,204,125,27))begin_delete();
+                else for(int i=0;i<SLOT_COUNT;i++)if(in_rect(p.px,p.py,19,39+i*55,282,44)){
                     selected_slot=i;choose_slot();break;
                 }
+            }
+        }else if(scene==SCENE_DELETE){
+            if(down&KEY_B)scene=SCENE_SLOTS;
+            if(down&KEY_A)confirm_delete();
+            if(down&KEY_TOUCH){
+                touchPosition p;hidTouchRead(&p);
+                if(in_rect(p.px,p.py,16,75,137,53))scene=SCENE_SLOTS;
+                else if(in_rect(p.px,p.py,166,75,137,53))confirm_delete();
             }
         }else if(scene==SCENE_OVERWRITE){
             if(down & KEY_B)scene=SCENE_SLOTS;
@@ -646,8 +686,8 @@ int main(int argc, char **argv) {
             }
         }else{
             if(down&KEY_B){
-                if(scene==SCENE_EDITOR || (scene==SCENE_GAME && custom_play))go_menu();
-                else reset_current();
+                if(scene==SCENE_EDITOR)go_menu();
+                else if(scene==SCENE_GAME&&!custom_play)reset_current();
             }
             if(scene==SCENE_GAME){
                 if((down&KEY_A)&&won&&!custom_play){
@@ -674,6 +714,7 @@ int main(int argc, char **argv) {
         else if(scene==SCENE_CREDITS){draw_credits_top();draw_credits_bottom();}
         else if(scene==SCENE_SLOTS){draw_slots_top();draw_slots_bottom();}
         else if(scene==SCENE_OVERWRITE){draw_overwrite_top();draw_overwrite_bottom();}
+        else if(scene==SCENE_DELETE){draw_delete_top();draw_delete_bottom();}
         else{draw_board_top();draw_board_bottom();}
         C3D_FrameEnd(0);
     }
