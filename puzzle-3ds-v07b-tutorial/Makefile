@@ -18,8 +18,8 @@ ASFLAGS := -g $(ARCH)
 LDFLAGS = -specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 LIBS := -lcitro2d -lcitro3d -lctru -lm
 LIBDIRS := $(PORTLIBS) $(CTRULIB)
-APP_TITLE := Puzzle 3DS V07-A
-APP_DESCRIPTION := Campana de 8 niveles y puntuacion
+APP_TITLE := Puzzle 3DS V07-B
+APP_DESCRIPTION := Tutorial interactivo y 16 niveles
 APP_AUTHOR := Proyecto educativo
 
 ifneq ($(BUILD),$(notdir $(CURDIR)))
