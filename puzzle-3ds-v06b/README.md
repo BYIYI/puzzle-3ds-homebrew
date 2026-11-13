@@ -55,3 +55,13 @@ Se conserva el guardado de V05-B en `sdmc:/3ds/puzzle_3ds_v05b/nivel_01.txt`; el
 - Los tres espacios de V06-B y sus nombres personalizados mantienen las rutas anteriores.
 
 **Pruebas pendientes antes de fusionar PR #4:** campaña original, niveles personalizados, SELECT, menú, editor accesible únicamente desde principal, nombres y persistencia tras reiniciar. Código disponible en la rama de desarrollo; el .3dsx debe recompilarse y probarse en la consola.
+
+
+## Corrección 4 — Pendiente de prueba
+- MIS NIVELES permite eliminar el espacio seleccionado con X o botón táctil ELIMINAR, después de confirmar.
+- CANCELAR conserva el archivo. Solo se elimina el espacio seleccionado; no se tocan los demás ni el guardado legado V05-B.
+- Durante un puzle personalizado B no sale ni reinicia (usa VOLVER AL MENU táctil).
+- B sigue reiniciando la campaña original, START ya no abandona partidas inadvertidamente.
+- Se mantiene el guardado/carga de nombres; validar de nuevo tras reiniciar.
+
+**No fusionar el PR hasta compilar y probar estas modificaciones en Old 3DS.** Antes de probar ELIMINAR, hacer un respaldo de los archivos de niveles en la SD.
