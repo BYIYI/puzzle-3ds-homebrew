@@ -398,9 +398,13 @@ static void draw_board_bottom(void) {
         button(236,105, 74, 29, "DERECHA", rgba(51,105,116));
         button(155,140, 73, 29, "DESHACER", rgba(80,83,126));
         button(236,140, 74, 29, "REINICIAR", rgba(125,74,85));
-        button(155,175,155,29, won && !custom_play ? (level+1<LEVELS ? "SIGUIENTE NIVEL" : "VOLVER AL MENU") : "EDITOR (SELECT)", rgba(47,100,77));
+        button(155,175,155,29,
+            custom_play ? "VOLVER AL MENU" :
+            (won ? (level+1<LEVELS ? "SIGUIENTE NIVEL" : "VOLVER AL MENU") : "EDITOR (SELECT)"),
+            rgba(47,100,77));
         if (won) label("NIVEL COMPLETADO!", 10, 207, 0.42f, rgba(119,228,159));
-        else label("X/Y: mover | SELECT: editor", 10, 207, 0.35f, rgba(180,225,241));
+        else label(custom_play ? "B: menu | SELECT: editor" : "X/Y: mover | SELECT: editor",
+            10, 207, 0.35f, rgba(180,225,241));
         label(touch_action, 10, 224, 0.35f, rgba(250,226,137));
     }
 }
@@ -554,6 +558,7 @@ static bool handle_game_touch(u16 x,u16 y){
     if (in_rect(x,y,155,140,73,29)) { touch_action="DESHACER"; undo(); return true; }
     if (in_rect(x,y,236,140,74,29)) { touch_action="REINICIAR"; reset_current(); return true; }
     if (in_rect(x,y,155,175,155,29)) {
+        if (custom_play) { go_menu(); touch_action="Volviste al menu"; return true; }
         if(won&&!custom_play){
             if(level+1<LEVELS){load_level(level+1);touch_action="SIGUIENTE NIVEL";}
             else{go_menu();touch_action="Volviste al menu";}
@@ -601,6 +606,33 @@ int main(int argc, char **argv) {
                     menu_selection=i;menu_confirm();break;
                 }
             }
+        }else if(scene==SCENE_SLOTS){
+            if(down & KEY_UP)selected_slot=(selected_slot+SLOT_COUNT-1)%SLOT_COUNT;
+            if(down & KEY_DOWN)selected_slot=(selected_slot+1)%SLOT_COUNT;
+            if(down & KEY_B)scene=slot_save_mode?SCENE_EDITOR:SCENE_MENU;
+            if(down & KEY_A)choose_slot();
+            if(down & KEY_TOUCH){
+                touchPosition p;hidTouchRead(&p);
+                for(int i=0;i<SLOT_COUNT;i++)if(in_rect(p.px,p.py,19,39+i*55,282,44)){
+                    selected_slot=i;choose_slot();break;
+                }
+            }
+        }else if(scene==SCENE_OVERWRITE){
+            if(down & KEY_B)scene=SCENE_SLOTS;
+            if(down & KEY_A){
+                bool ok=write_slot(selected_slot,pending_name);
+                snprintf(storage_status,sizeof(storage_status),"%s",ok?"Nivel reemplazado":"Error reemplazando");
+                scene=SCENE_EDITOR;
+            }
+            if(down & KEY_TOUCH){
+                touchPosition p;hidTouchRead(&p);
+                if(in_rect(p.px,p.py,16,75,137,53))scene=SCENE_SLOTS;
+                else if(in_rect(p.px,p.py,166,75,137,53)){
+                    bool ok=write_slot(selected_slot,pending_name);
+                    snprintf(storage_status,sizeof(storage_status),"%s",ok?"Nivel reemplazado":"Error reemplazando");
+                    scene=SCENE_EDITOR;
+                }
+            }
         }else if(scene==SCENE_HELP||scene==SCENE_CREDITS){
             if(down&(KEY_A|KEY_B))go_menu();
             if(down&KEY_TOUCH){
@@ -609,7 +641,7 @@ int main(int argc, char **argv) {
             }
         }else{
             if(down&KEY_B){
-                if(scene==SCENE_EDITOR)go_menu();
+                if(scene==SCENE_EDITOR || (scene==SCENE_GAME && custom_play))go_menu();
                 else reset_current();
             }
             if(down&KEY_SELECT){
@@ -639,6 +671,8 @@ int main(int argc, char **argv) {
         if(scene==SCENE_MENU){draw_menu_top();draw_menu_bottom();}
         else if(scene==SCENE_HELP){draw_help_top();draw_help_bottom();}
         else if(scene==SCENE_CREDITS){draw_credits_top();draw_credits_bottom();}
+        else if(scene==SCENE_SLOTS){draw_slots_top();draw_slots_bottom();}
+        else if(scene==SCENE_OVERWRITE){draw_overwrite_top();draw_overwrite_bottom();}
         else{draw_board_top();draw_board_bottom();}
         C3D_FrameEnd(0);
     }
