@@ -1,0 +1,6 @@
+Descomprime puzzle-3ds-v06b en C:/3DS-Proyectos/puzzle_3ds_v06b
+En terminal devkitPro MSYS2:
+cd /c/3DS-Proyectos/puzzle_3ds_v06b
+make
+Copia puzzle_3ds_v06b.3dsx a SD:/3ds/puzzle_3ds_v06b/
+No borres las carpetas de guardados de V05-B ni V06-B.
