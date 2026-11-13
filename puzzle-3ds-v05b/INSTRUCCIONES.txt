@@ -1,0 +1,5 @@
+1. Abrir devkitPro MSYS2.
+2. cd /c/3DS-Proyectos/puzzle_3ds_v05b
+3. make
+4. Copiar puzzle_3ds_v05b.3dsx a SD:/3ds/puzzle_3ds_v05b/
+5. En el editor usar GUARDAR / CARGAR y reiniciar para probar persistencia.
